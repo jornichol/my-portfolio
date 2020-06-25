@@ -17,7 +17,7 @@
  */
 
 function addRandomCity() {
-  const cities = ["sanfrancisco.jpg","nyc.jpg", "seattle.jpg", "paris.jpg"];
+  const cities = ["images/sanfrancisco.jpg","images/nyc.jpg", "images/seattle.jpg", "images/paris.jpg"];
 
   // Pick a random city.
   const city = cities[Math.floor(Math.random() * cities.length)];
