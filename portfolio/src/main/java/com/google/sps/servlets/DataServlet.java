@@ -15,6 +15,10 @@
 package com.google.sps.servlets;
 
 import java.io.IOException;
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,10 +27,28 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+  public HashMap<String, Integer> data = new HashMap<String, Integer>();
+
+  @Override
+  public void init() {
+    data.put("books", 3);
+    data.put("cars", 10);
+    data.put("pen", 1);
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("<h1>Hello Jordan!</h1>");
+    String json = convertToJsonUsingGson(data);
+    response.setContentType("application/json");
+    response.getWriter().println(json);
+  }
+
+  /**
+   * Converts a HashMap into a JSON string using the Gson library.
+   */
+  private String convertToJsonUsingGson(HashMap<String, Integer> data){
+    Gson gson = new Gson();
+    String json = gson.toJson(data);
+    return json;
   }
 }
