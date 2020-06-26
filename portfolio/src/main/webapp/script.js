@@ -13,6 +13,17 @@
 // limitations under the License.
 
 /**
+ * Fetches data from the servers and adds them to the DOM.
+ */
+function getServerData() {
+  fetch('/data').then(response => response.json()).then((data) => {
+
+    document.getElementById('json-data-container').innerText = data.cars + ', ' + data.pen + ', ' + data.books;
+
+  });
+}
+
+/**
  * The async and await keywords use fetch to request '/data' and add it to DOM.
  */
  async function getDataUsingAsyncAwait() {
