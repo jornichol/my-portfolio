@@ -14,6 +14,9 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
 import com.google.gson.Gson;
 import java.util.ArrayList;
@@ -27,14 +30,15 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  public HashMap<String, Integer> data = new HashMap<String, Integer>();
+  public ArrayList<String> data = new ArrayList<String>();
 
+  /*
   @Override
   public void init() {
     data.put("books", 3);
     data.put("cars", 10);
     data.put("pen", 1);
-  }
+  }*/
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -43,10 +47,24 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      String comment = request.getParameter("text-input");
+      data.add(comment);
+
+      Entity taskEntity = new Entity("Task");
+      taskEntity.setProperty("Data", comment);
+
+      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+      datastore.put(taskEntity);
+
+      // Redirect back to the HTML page.
+      response.sendRedirect("/index.html");
+  }
   /**
    * Converts a HashMap into a JSON string using the Gson library.
    */
-  private String convertToJsonUsingGson(HashMap<String, Integer> data){
+  private String convertToJsonUsingGson(ArrayList<String> data){
     Gson gson = new Gson();
     String json = gson.toJson(data);
     return json;
