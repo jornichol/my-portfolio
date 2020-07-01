@@ -27,7 +27,12 @@ function getServerData() {
  * The async and await keywords use fetch to request '/data' and add it to DOM.
  */
  async function getDataUsingAsyncAwait() {
-     const response = await fetch('/data');
-     const quote = await response.text();
-     document.getElementById('data-container').innerText = quote;
+    const response = await fetch('/data');
+    const quote = await response.text();
+    document.getElementById('data-container').innerText = quote;
  }
+
+/** Tells the server to delete comments. */
+function deleteComments() {
+  fetch('/delete-data', {method: 'POST'});
+}
