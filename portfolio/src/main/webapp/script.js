@@ -36,3 +36,16 @@ function getServerData() {
 function deleteComments() {
   fetch('/delete-data', {method: 'POST'});
 }
+
+/** Sets the form's action to the blobstore upload url. */
+function fetchBlobstoreUrlAndShowForm() {
+  fetch('/blobstore-upload-url')
+      .then((response) => {
+        return response.text();
+      })
+      .then((imageUploadUrl) => {
+        const messageForm = document.getElementById('display-img');
+        messageForm.action = imageUploadUrl;
+        messageForm.classList.remove('hidden');
+      });
+}
