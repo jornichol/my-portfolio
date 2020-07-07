@@ -13,16 +13,39 @@
 // limitations under the License.
 
 /**
- * Adds a random greeting to the page.
+ * Fetches data from the servers and adds them to the DOM.
  */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+function getServerData() {
+  fetch('/data').then(response => response.json()).then((data) => {
 
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    document.getElementById('json-data-container').innerText = data.cars + ', ' + data.pen + ', ' + data.books;
 
-  // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+  });
+}
+
+/**
+ * The async and await keywords use fetch to request '/data' and add it to DOM.
+ */
+ async function getDataUsingAsyncAwait() {
+    const response = await fetch('/data');
+    const quote = await response.text();
+    document.getElementById('data-container').innerText = quote;
+ }
+
+/** Tells the server to delete comments. */
+function deleteComments() {
+  fetch('/delete-data', {method: 'POST'});
+}
+
+/** Sets the form's action to the blobstore upload url. */
+function fetchBlobstoreUrlAndShowForm() {
+  fetch('/blobstore-upload-url')
+      .then((response) => {
+        return response.text();
+      })
+      .then((imageUploadUrl) => {
+        const messageForm = document.getElementById('display-img');
+        messageForm.action = imageUploadUrl;
+        messageForm.classList.remove('hidden');
+      });
 }
