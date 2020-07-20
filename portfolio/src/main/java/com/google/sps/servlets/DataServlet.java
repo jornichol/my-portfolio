@@ -16,6 +16,8 @@ package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
@@ -35,20 +37,22 @@ import javax.servlet.http.HttpServletResponse;
 public class DataServlet extends HttpServlet {
   public ArrayList<String> data = new ArrayList<String>();
   public DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  public UserService userService = UserServiceFactory.getUserService();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Integer numOfComments = Integer.parseInt(request.getParameter("numComments"));
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
-    ArrayList<String> comments = new ArrayList<>();
+    HashMap<String, String> comments = new HashMap<String, String>();
 
     int iter = 0;
     for (Entity entity : results.asIterable()) {
         if (iter == numOfComments) break;
         String loadComment = (String) entity.getProperty("comment");
+        String loadEmail = (String) entity.getProperty("email");
         long timestamp = (long) entity.getProperty("timestamp");
-        comments.add(loadComment);
+        comments.put(loadComment, loadEmail);
         iter++;
     }
     
@@ -60,11 +64,13 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
       String comment = request.getParameter("text-input");
+      String userEmail = userService.getCurrentUser().getEmail();
       
       long timestamp = System.currentTimeMillis();
 
       Entity taskEntity = new Entity("Comment");
       taskEntity.setProperty("comment", comment);
+      taskEntity.setProperty("email", userEmail);
       taskEntity.setProperty("timestamp", timestamp);
 
       datastore.put(taskEntity);
@@ -76,7 +82,7 @@ public class DataServlet extends HttpServlet {
   /**
    * Converts an ArrayList into a JSON string using the Gson library.
    */
-  private String convertToJsonUsingGson(ArrayList<String> data){
+  private String convertToJsonUsingGson(HashMap<String, String> data){
     Gson gson = new Gson();
     String json = gson.toJson(data);
     return json;
